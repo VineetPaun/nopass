@@ -15,7 +15,6 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import dynamic from 'next/dynamic';
 import { useUser } from "@clerk/nextjs";
 import toast from "react-hot-toast";
 
@@ -23,7 +22,7 @@ const formSchema = z.object({
   cardNumber: z.string().min(16, {
     message: "Card number must be at least 16 digits.",
   }).max(19, {
-    message: "Card number cannot excged 19 digits."
+    message: "Card number cannot exceed 19 digits."
   }).regex(/^\d+$/, {
     message: "Card number must contain only digits."
   }),
@@ -37,7 +36,11 @@ const formSchema = z.object({
   })
 })
 
-export function AddCard() {
+interface AddCardProps {
+  onCardAdded: (card: { cardNo: string, expiry: string, cvv: number }) => void;
+}
+
+export function AddCard({ onCardAdded }: AddCardProps) {
   const user = useUser()
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -66,6 +69,7 @@ export function AddCard() {
 
         if (response.ok) {
           toast.success("Card Added");
+          onCardAdded({ cardNo: values.cardNumber, expiry: values.expiryDate, cvv: values.cvv });
           form.reset()
         } else {
           toast.error("Failed to add card");
