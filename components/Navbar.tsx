@@ -17,7 +17,7 @@ const Navbar = () => {
     const { setTheme } = useTheme()
 
     return (
-        <nav className='flex justify-between items-center h-16 px-4 text-foreground bg-border'>
+        <nav className='flex justify-between items-center h-16 px-4 text-foreground bg-border prima'>
             <span className="font-bold text-xl">NoPass</span>
             <ul className='flex gap-5 items-center justify-start'>
                 <li>Home</li>
