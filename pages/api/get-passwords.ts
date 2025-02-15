@@ -7,11 +7,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     try {
       const client = await clerkClient();
       const user = await client.users.getUser(userId as string);
-      const cards = user.privateMetadata.cards || [];
-      res.status(200).json({ cards });
+      const passwords = user.privateMetadata.passwords || [];
+      res.status(200).json({ passwords });
     } catch (error) {
-      console.error("Error fetching cards:", error);
-      res.status(500).json({ error: 'Failed to fetch cards' });
+    //   console.error("Error fetching cards:", error);
+      res.status(500).json({ error: 'Failed to fetch passwords' });
     }
   } else {
     res.status(405).json({ error: 'Method not allowed' });
