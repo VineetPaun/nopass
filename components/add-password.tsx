@@ -41,7 +41,13 @@ export function AddPassword({ onPasswordAdded }: AddPasswordProps) {
     },
   })
 
+  const { formState: { isSubmitting } } = form;
+  const [isProcessing, setIsProcessing] = useState(false);
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    if (isProcessing) return; // Prevent duplicate processing
+    setIsProcessing(true);
+    
     if(user.user) {
       try {
         const response = await fetch('/api/add-password', {
@@ -60,21 +66,22 @@ export function AddPassword({ onPasswordAdded }: AddPasswordProps) {
         if (response.ok) {
           toast.success("Password Added");
           onPasswordAdded({ websiteName: values.websiteName, password: values.password, confirmPassword: values.confirmPassword });
-          form.reset()
-        } else {
-          toast.error("Failed to add password");
+          form.reset();
+          setIsProcessing(false);
+          return; // Add return statement here
         }
+        
+        toast.error("Failed to add password");
+        setIsProcessing(false);
+        return;
       } catch (error) {
         toast.error("Failed to add password");
+        setIsProcessing(false);
+        return;
       }
     }
+    setIsProcessing(false);
   }
-
-  // const handleSubmit = (e: React.FormEvent) => {
-  //   e.preventDefault()
-  //   // Handle password submission logic here
-  //   console.log("Password submitted:", { website, username, password })
-  // }
 
   return (
     <Card>
@@ -82,7 +89,7 @@ export function AddPassword({ onPasswordAdded }: AddPasswordProps) {
         <CardTitle>Add New Password</CardTitle>
       </CardHeader>
       <CardContent>
-      <Form {...form}>
+        <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
@@ -132,42 +139,10 @@ export function AddPassword({ onPasswordAdded }: AddPasswordProps) {
                 </FormItem>
               )}
             />
-            <Button className="w-full" type="submit">Submit</Button>
+            <Button className="w-full" type="submit" disabled={isSubmitting || isProcessing}>Submit</Button>
           </form>
         </Form>
-        
-        
-        {/* <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="website">Website</Label>
-            <Input
-              id="website"
-              placeholder="https://example.com"
-              value={website}
-              onChange={(e) => setWebsite(e.target.value)}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="username">Username</Label>
-            <Input id="username" placeholder="johndoe" value={username} onChange={(e) => setUsername(e.target.value)} />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              type="password"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
-        </form> */}
       </CardContent>
-      <CardFooter>
-        <Button type="submit" className="w-full">
-          Add Password
-        </Button>
-      </CardFooter>
     </Card>
   )
 }
