@@ -171,4 +171,3 @@ export function AddPassword({ onPasswordAdded }: AddPasswordProps) {
     </Card>
   )
 }
-
